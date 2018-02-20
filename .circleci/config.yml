@@ -11,12 +11,26 @@ workflows:
 base: &base
   steps:
     - checkout
-    - run: |
-        # Still missing the merge PR to master branch block
-        sudo pip install codecov
-        sudo python scripts/ci/install
-        python scripts/ci/run-tests
-        rm tests/coverage.xml && mv tests/.coverage ./ && codecov
+    - restore_cache:
+        key:
+          - pip-v1-{{ .Branch }}-{{ checksum "requirements.txt" }}
+          - pip-v1-{{ .Branch }}
+          - pip-v1
+    - run:
+        name: "Checks & Dependencies"
+        command: |
+          # Still missing the merge PR to master branch block
+          sudo pip install codecov
+          sudo python scripts/ci/install
+    - save_cache:
+        key: pip-v1-{{ .Branch }}-{{ checksum "requirements.txt" }}
+        paths:
+          - "~/.cache/pip"
+    - run:
+        name: "Run Tests"
+        command: |
+          python scripts/ci/run-tests
+          rm tests/coverage.xml && mv tests/.coverage ./ && codecov
 
 version: 2
 jobs:
