@@ -1,0 +1,47 @@
+workflows:
+  version: 2
+  main:
+    jobs:
+      - python26
+      - python27
+      - python33
+      - python34
+      - python35
+      - python36
+
+base: &base
+  steps:
+    - checkout
+    - run: |
+        # Still missing the merge PR to master branch block
+        sudo pip install codecov
+        sudo python scripts/ci/install
+        python scripts/ci/run-tests
+        rm tests/coverage.xml && mv tests/.coverage ./ && codecov
+
+version: 2
+jobs:
+  python26:
+    docker:
+      - image: circleci/python:2.6
+    <<: *base
+  python27:
+    docker:
+      - image: circleci/python:2.7
+    <<: *base
+  python33:
+    docker:
+      - image: circleci/python:3.3
+    <<: *base
+  python34:
+    docker:
+      - image: circleci/python:3.4
+    <<: *base
+  python35:
+    docker:
+      - image: circleci/python:3.5
+    <<: *base
+  python36:
+    docker:
+      - image: circleci/python:3.6
+    <<: *base
