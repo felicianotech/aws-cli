@@ -12,7 +12,7 @@ base: &base
   steps:
     - checkout
     - restore_cache:
-        key:
+        keys:
           - pip-v1-{{ .Branch }}-{{ checksum "requirements.txt" }}
           - pip-v1-{{ .Branch }}
           - pip-v1
